@@ -1,0 +1,110 @@
+<%# Partial : carte d'affichage d'un potin individuel %>
+<%# Variable attendue : gossip (instance de Gossip) %>
+<%# Utilisé sur : index, cities/show %>
+
+<div class="card mb-3 shadow-sm">
+  <div class="card-body">
+
+    <%# ── En-tête : titre et badge ville ──────────────────────────────────── %>
+    <div class="d-flex justify-content-between align-items-start mb-2">
+
+      <%# Titre du potin : cliquable si l'utilisateur est connecté %>
+      <h5 class="card-title mb-0">
+        <% if logged_in? %>
+          <%# Lien vers la page de détail du potin %>
+          <%= link_to gossip.title, gossip_path(gossip),
+                class: "text-decoration-none text-dark" %>
+        <% else %>
+          <%# Titre non cliquable pour les visiteurs non connectés %>
+          <%= gossip.title %>
+        <% end %>
+      </h5>
+
+      <%# Badge de la ville associée au potin (lien vers la page de la ville) %>
+      <span class="badge bg-secondary ms-2 text-nowrap">
+        <%= link_to gossip.city.name, city_path(gossip.city),
+              class: "text-white text-decoration-none" %>
+      </span>
+
+    </div>
+
+    <%# ── Corps : extrait du contenu du potin (tronqué à 180 caractères) ─── %>
+    <p class="card-text text-muted mb-3">
+      <%# truncate : ajoute "..." si le texte dépasse 180 caractères %>
+      <%= truncate(gossip.content, length: 180) %>
+    </p>
+
+    <%# ── Pied de carte : méta-infos et boutons d'action ─────────────────── %>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+      <%# Méta-informations : auteur, date, nombre de commentaires %>
+      <small class="text-muted">
+        <%# Icône + nom de l'auteur %>
+        <i class="bi bi-person-fill"></i> <%= gossip.user.username %>
+        &bull;
+        <%# Date relative (ex : "il y a 3 minutes") via le helper Rails %>
+        <i class="bi bi-clock"></i> il y a <%= time_ago_in_words(gossip.created_at) %>
+        &bull;
+        <%# Nombre de commentaires %>
+        <i class="bi bi-chat-dots"></i> <%= gossip.comments.count %>
+      </small>
+
+      <%# Boutons d'action (likes + édition/suppression) %>
+      <div class="d-flex gap-2 align-items-center">
+
+        <%# ── Section Like / Déliker ─────────────────────────────────────── %>
+        <% if logged_in? %>
+          <%# Recherche du like de l'utilisateur connecté pour ce potin %>
+          <% user_like = gossip.likes.find_by(user_id: current_user.id) %>
+
+          <% if user_like %>
+            <%# L'utilisateur a déjà liké : bouton pour retirer le like (DELETE) %>
+            <%= button_to gossip_like_path(gossip, user_like),
+                  method: :delete,
+                  class:  "btn btn-sm btn-danger",
+                  form:   { style: "display:inline;" } do %>
+              <i class="bi bi-heart-fill"></i> <%= gossip.likes.count %>
+            <% end %>
+          <% else %>
+            <%# L'utilisateur n'a pas encore liké : bouton pour liker (POST) %>
+            <%= button_to gossip_likes_path(gossip),
+                  method: :post,
+                  class:  "btn btn-sm btn-outline-danger",
+                  form:   { style: "display:inline;" } do %>
+              <i class="bi bi-heart"></i> <%= gossip.likes.count %>
+            <% end %>
+          <% end %>
+        <% else %>
+          <%# Visiteur non connecté : affichage du compteur de likes sans interaction %>
+          <span class="text-muted small">
+            <i class="bi bi-heart"></i> <%= gossip.likes.count %>
+          </span>
+        <% end %>
+        <%# ── Fin section Like ────────────────────────────────────────────── %>
+
+        <%# ── Boutons Éditer / Supprimer (auteur seulement) ──────────────── %>
+        <% if logged_in? && gossip.user == current_user %>
+
+          <%# Lien vers la page d'édition du potin %>
+          <%= link_to edit_gossip_path(gossip), class: "btn btn-sm btn-outline-secondary" do %>
+            <i class="bi bi-pencil"></i>
+          <% end %>
+
+          <%# Bouton de suppression avec confirmation JavaScript via Turbo %>
+          <%= button_to gossip_path(gossip),
+                method: :delete,
+                data:   { turbo_confirm: "Supprimer définitivement ce potin ?" },
+                class:  "btn btn-sm btn-outline-danger",
+                form:   { style: "display:inline;" } do %>
+            <i class="bi bi-trash"></i>
+          <% end %>
+
+        <% end %>
+        <%# ── Fin boutons auteur ──────────────────────────────────────────── %>
+
+      </div>
+    </div>
+    <%# ── Fin pied de carte ───────────────────────────────────────────────── %>
+
+  </div>
+</div>

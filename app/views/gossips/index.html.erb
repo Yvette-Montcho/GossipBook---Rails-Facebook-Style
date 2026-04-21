@@ -1,0 +1,36 @@
+<%# Page d'accueil : liste de tous les potins par ordre chronologique inverse %>
+<% content_for :title, full_title("Tous les potins") %>
+
+<%# En-tête de la page avec titre et bouton de création %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">📢 Les derniers potins</h2>
+  <%# Bouton de création visible seulement pour les utilisateurs connectés %>
+  <% if logged_in? %>
+    <%= link_to new_gossip_path, class: "btn btn-dark" do %>
+      <i class="bi bi-plus-circle"></i> Nouveau potin
+    <% end %>
+  <% end %>
+</div>
+
+<%# Affichage conditionnel selon la présence de potins %>
+<% if @gossips.any? %>
+  <%# Rendu de chaque potin via le partial _gossip.html.erb %>
+  <%# Passage de la variable locale gossip pour isoler chaque itération %>
+  <% @gossips.each do |gossip| %>
+    <%= render 'gossip', gossip: gossip %>
+  <% end %>
+<% else %>
+  <%# Message affiché si aucun potin n'existe encore en base %>
+  <div class="alert alert-info text-center">
+    <i class="bi bi-chat-dots fs-3 d-block mb-2"></i>
+    Aucun potin pour l'instant.
+    <% if logged_in? %>
+      <%# Invitation à créer le premier potin %>
+      <%= link_to "Soyez le premier à publier un potin !", new_gossip_path, class: "fw-bold" %>
+    <% else %>
+      <%# Invitation à s'inscrire pour pouvoir poster %>
+      <%= link_to "Inscrivez-vous", signup_path, class: "fw-bold" %>
+      pour commencer à commèrer !
+    <% end %>
+  </div>
+<% end %>

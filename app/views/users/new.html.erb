@@ -1,0 +1,83 @@
+<%# Définition du titre de l'onglet pour cette page %>
+<% content_for :title, full_title("Inscription") %>
+
+<%# Centrage de la carte d'inscription sur la page %>
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm">
+
+      <%# En-tête de la carte %>
+      <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">
+          <i class="bi bi-person-plus-fill"></i> Créer un compte
+        </h4>
+      </div>
+
+      <div class="card-body p-4">
+
+        <%# Affichage des erreurs de validation si le formulaire a été soumis avec des erreurs %>
+        <% if @user.errors.any? %>
+          <div class="alert alert-danger">
+            <%# Nombre d'erreurs au total %>
+            <strong><i class="bi bi-exclamation-triangle"></i>
+              <%= @user.errors.count %> erreur(s) :
+            </strong>
+            <%# Liste de toutes les erreurs de validation %>
+            <ul class="mb-0 mt-1">
+              <% @user.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%# Formulaire d'inscription - url: signup_path cible POST /signup %>
+        <%= form_with model: @user, url: signup_path do |f| %>
+
+          <%# Champ : nom d'utilisateur (pseudo affiché publiquement) %>
+          <div class="mb-3">
+            <%= f.label :username, "Nom d'utilisateur", class: "form-label fw-semibold" %>
+            <%= f.text_field :username,
+                  class:       "form-control",
+                  placeholder: "ex : jean_dupont",
+                  autofocus:   true %>
+          </div>
+
+          <%# Champ : adresse e-mail (identifiant de connexion) %>
+          <div class="mb-3">
+            <%= f.label :email, "Adresse e-mail", class: "form-label fw-semibold" %>
+            <%= f.email_field :email,
+                  class:       "form-control",
+                  placeholder: "ex : jean@example.com" %>
+          </div>
+
+          <%# Champ : mot de passe (sera hashé par bcrypt, jamais stocké en clair) %>
+          <div class="mb-3">
+            <%= f.label :password, "Mot de passe (6 caractères minimum)", class: "form-label fw-semibold" %>
+            <%= f.password_field :password, class: "form-control" %>
+          </div>
+
+          <%# Champ : confirmation du mot de passe (bcrypt vérifie que les deux correspondent) %>
+          <div class="mb-4">
+            <%= f.label :password_confirmation, "Confirmation du mot de passe", class: "form-label fw-semibold" %>
+            <%= f.password_field :password_confirmation, class: "form-control" %>
+          </div>
+
+          <%# Bouton de soumission du formulaire %>
+          <%= f.submit "Créer mon compte",
+                class: "btn btn-dark w-100 py-2" %>
+
+        <% end %>
+
+        <%# Lien de redirection vers la connexion pour les utilisateurs déjà inscrits %>
+        <div class="text-center mt-3">
+          <small class="text-muted">
+            Déjà inscrit(e) ?
+            <%= link_to "Se connecter", login_path %>
+          </small>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

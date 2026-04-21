@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <%# Titre de la page : utilise content_for(:title) si défini, sinon le helper full_title %>
+    <title><%= content_for?(:title) ? yield(:title) : full_title %></title>
+
+    <%# Encodage des caractères (UTF-8 obligatoire pour les accents français) %>
+    <meta charset="utf-8">
+    <%# Viewport pour le responsive design sur mobile %>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%# Token CSRF : protège les formulaires contre les attaques Cross-Site Request Forgery %>
+    <meta name="csrf-token" content="<%= form_authenticity_token %>">
+
+    <%# Bootstrap 5.3 CSS via CDN : framework CSS pour le design responsive %>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          crossorigin="anonymous">
+
+    <%# Bootstrap Icons : bibliothèque d'icônes (cœur, crayon, poubelle, personne...) %>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet">
+
+    <%# Feuilles de style CSS personnalisées de l'application %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  </head>
+
+  <body class="bg-light">
+
+    <%# ========================= BARRE DE NAVIGATION ========================= %>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+      <div class="container">
+
+        <%# Logo et nom de l'application → lien vers la page d'accueil %>
+        <%= link_to root_path, class: "navbar-brand fw-bold fs-4" do %>
+          📢 GossipBook
+        <% end %>
+
+        <%# Bouton hamburger affiché sur mobile (écrans < lg) %>
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarContent"
+                aria-controls="navbarContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <%# Contenu de la navbar (masqué sur mobile, visible sur grand écran) %>
+        <div class="collapse navbar-collapse" id="navbarContent">
+
+          <%# Liens de navigation principaux (alignés à gauche) %>
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <%# Lien vers la page d'accueil (liste de tous les potins) %>
+            <li class="nav-item">
+              <%= link_to "Accueil", root_path, class: "nav-link" %>
+            </li>
+          </ul>
+
+          <%# Liens d'authentification (alignés à droite) %>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <% if logged_in? %>
+              <%# L'utilisateur est connecté : affichage du nom et bouton de déconnexion %>
+
+              <%# Affichage du nom d'utilisateur connecté (non cliquable) %>
+              <li class="nav-item">
+                <span class="nav-link text-light">
+                  <i class="bi bi-person-fill"></i>
+                  <%= current_user.username %>
+                </span>
+              </li>
+
+              <%# Bouton de déconnexion : envoie une requête DELETE /logout via Turbo %>
+              <li class="nav-item">
+                <%= button_to "Se déconnecter", logout_path,
+                      method:  :delete,
+                      class:   "btn btn-outline-light btn-sm ms-2",
+                      form:    { style: "display:inline;" } %>
+              </li>
+
+            <% else %>
+              <%# L'utilisateur n'est pas connecté : dropdown Compte %>
+              <li class="nav-item dropdown">
+                <%# Bouton déclencheur du menu déroulant %>
+                <a class="nav-link dropdown-toggle" href="#"
+                   role="button"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                  <i class="bi bi-person-circle"></i> Compte
+                </a>
+                <%# Menu déroulant aligné à droite %>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <%# Lien vers la page d'inscription %>
+                  <li>
+                    <%= link_to signup_path, class: "dropdown-item" do %>
+                      <i class="bi bi-person-plus"></i> S'inscrire
+                    <% end %>
+                  </li>
+                  <%# Séparateur visuel %>
+                  <li><hr class="dropdown-divider"></li>
+                  <%# Lien vers la page de connexion %>
+                  <li>
+                    <%= link_to login_path, class: "dropdown-item" do %>
+                      <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                    <% end %>
+                  </li>
+                </ul>
+              </li>
+            <% end %>
+          </ul>
+
+        </div>
+      </div>
+    </nav>
+    <%# ====================== FIN BARRE DE NAVIGATION ======================= %>
+
+    <%# Conteneur principal : toutes les pages sont rendues ici %>
+    <main class="container my-4">
+
+      <%# Affichage des messages flash (succès, erreur, avertissement, info) %>
+      <%= render 'shared/flash' %>
+
+      <%# Contenu spécifique à chaque vue (injecté par yield) %>
+      <%= yield %>
+
+    </main>
+
+    <%# Pied de page minimal %>
+    <footer class="bg-dark text-center text-light py-3 mt-5">
+      <small>GossipBook &copy; <%= Date.current.year %> — Projet Rails Week 6</small>
+    </footer>
+
+    <%# Bootstrap 5.3 JavaScript bundle (inclut Popper.js pour les dropdowns/modals) %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+            crossorigin="anonymous"></script>
+
+    <%# JavaScript de l'application Rails (importmap) %>
+    <%= javascript_importmap_tags %>
+
+  </body>
+</html>

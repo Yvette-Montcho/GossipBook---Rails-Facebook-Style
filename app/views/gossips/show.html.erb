@@ -1,0 +1,170 @@
+<%# Page de détail d'un potin avec son contenu complet et ses commentaires %>
+<% content_for :title, full_title(@gossip.title) %>
+
+<div class="row">
+  <div class="col-md-9 col-lg-8 mx-auto">
+
+    <%# ════════════════════ CARTE DU POTIN ════════════════════ %>
+    <div class="card shadow-sm mb-4">
+      <div class="card-body p-4">
+
+        <%# En-tête : titre et badge ville %>
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <h3 class="card-title mb-0"><%= @gossip.title %></h3>
+          <%# Badge ville : lien vers la liste des potins de cette ville %>
+          <span class="badge bg-secondary fs-6 ms-3">
+            <%= link_to @gossip.city.name, city_path(@gossip.city),
+                  class: "text-white text-decoration-none" %>
+          </span>
+        </div>
+
+        <%# Méta-informations : auteur et date de publication %>
+        <p class="text-muted small mb-3">
+          <i class="bi bi-person-fill"></i>
+          Par <strong><%= @gossip.user.username %></strong>
+          &bull;
+          <i class="bi bi-calendar3"></i>
+          <%# Date formatée en français (ex : "20 avril 2026 à 14:30") %>
+          <%= @gossip.created_at.strftime("%d %B %Y à %H:%M") %>
+        </p>
+
+        <%# Contenu intégral du potin (pas de troncature sur la page de détail) %>
+        <p class="card-text fs-5"><%= @gossip.content %></p>
+
+        <%# ── Pied de carte : likes et boutons de gestion ──────────────── %>
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+
+          <%# Section likes sur la page de détail %>
+          <div>
+            <% if logged_in? %>
+              <%# Recherche du like de l'utilisateur connecté pour ce potin %>
+              <% user_like = @gossip.likes.find_by(user_id: current_user.id) %>
+
+              <% if user_like %>
+                <%# Bouton pour retirer le like (utilisateur a déjà liké) %>
+                <%= button_to gossip_like_path(@gossip, user_like),
+                      method: :delete,
+                      class:  "btn btn-danger" do %>
+                  <i class="bi bi-heart-fill"></i>
+                  <%= @gossip.likes.count %> like(s)
+                <% end %>
+              <% else %>
+                <%# Bouton pour ajouter un like %>
+                <%= button_to gossip_likes_path(@gossip),
+                      method: :post,
+                      class:  "btn btn-outline-danger" do %>
+                  <i class="bi bi-heart"></i>
+                  <%= @gossip.likes.count %> like(s)
+                <% end %>
+              <% end %>
+            <% else %>
+              <%# Visiteur non connecté : compteur statique %>
+              <span class="fs-5">
+                <i class="bi bi-heart text-danger"></i>
+                <%= @gossip.likes.count %> like(s)
+              </span>
+            <% end %>
+          </div>
+
+          <%# Boutons Modifier / Supprimer (visible seulement pour l'auteur) %>
+          <% if logged_in? && current_user == @gossip.user %>
+            <div class="btn-group">
+              <%# Lien vers le formulaire d'édition %>
+              <%= link_to "✏️ Modifier", edit_gossip_path(@gossip),
+                    class: "btn btn-outline-secondary" %>
+              <%# Bouton de suppression avec confirmation Turbo %>
+              <%= button_to "🗑️ Supprimer", gossip_path(@gossip),
+                    method: :delete,
+                    data:   { turbo_confirm: "Êtes-vous sûr(e) de supprimer ce potin ?" },
+                    class:  "btn btn-outline-danger" %>
+            </div>
+          <% end %>
+
+        </div>
+        <%# ── Fin pied de carte ─────────────────────────────────────────── %>
+
+      </div>
+    </div>
+    <%# ════════════════════ FIN CARTE DU POTIN ════════════════ %>
+
+
+    <%# ════════════════════ SECTION COMMENTAIRES ═════════════ %>
+    <div class="card shadow-sm mb-4">
+
+      <%# En-tête de la section commentaires avec compteur %>
+      <div class="card-header bg-light">
+        <h5 class="mb-0">
+          <i class="bi bi-chat-dots-fill text-secondary"></i>
+          Commentaires (<%= @comments.count %>)
+        </h5>
+      </div>
+
+      <div class="card-body">
+
+        <%# ── Liste des commentaires existants ─────────────────────────── %>
+        <% if @comments.any? %>
+          <% @comments.each do |comment| %>
+            <%# Chaque commentaire dans son propre bloc %>
+            <div class="d-flex mb-3 pb-3 border-bottom">
+              <%# Icône avatar générique %>
+              <div class="me-3 pt-1">
+                <i class="bi bi-person-circle fs-3 text-secondary"></i>
+              </div>
+              <div>
+                <%# Nom de l'auteur et date relative %>
+                <strong><%= comment.user.username %></strong>
+                <small class="text-muted ms-2">
+                  il y a <%= time_ago_in_words(comment.created_at) %>
+                </small>
+                <%# Contenu du commentaire %>
+                <p class="mb-0 mt-1"><%= comment.content %></p>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <%# Aucun commentaire encore posté %>
+          <p class="text-muted">
+            <i class="bi bi-chat"></i> Aucun commentaire pour l'instant. Soyez le premier !
+          </p>
+        <% end %>
+        <%# ── Fin liste des commentaires ─────────────────────────────────── %>
+
+        <%# ── Formulaire d'ajout de commentaire ───────────────────────── %>
+        <div class="mt-4 pt-3 border-top">
+          <h6 class="mb-3"><i class="bi bi-chat-left-text"></i> Ajouter un commentaire</h6>
+          <%# Formulaire imbriqué : model [@gossip, @comment] → POST /gossips/:id/comments %>
+          <%= form_with model: [@gossip, @comment] do |f| %>
+
+            <%# Affichage des erreurs du commentaire si présentes %>
+            <% if @comment.errors.any? %>
+              <div class="alert alert-danger alert-sm">
+                <%= @comment.errors.full_messages.join(", ") %>
+              </div>
+            <% end %>
+
+            <%# Zone de saisie du commentaire %>
+            <div class="mb-2">
+              <%= f.text_area :content,
+                    class:       "form-control",
+                    rows:        3,
+                    placeholder: "Votre commentaire..." %>
+            </div>
+
+            <%# Bouton de soumission %>
+            <%= f.submit "Commenter",
+                  class: "btn btn-dark btn-sm" %>
+          <% end %>
+        </div>
+        <%# ── Fin formulaire de commentaire ─────────────────────────────── %>
+
+      </div>
+    </div>
+    <%# ════════════════════ FIN SECTION COMMENTAIRES ══════════ %>
+
+    <%# Lien de retour vers la liste des potins %>
+    <%= link_to root_path, class: "btn btn-outline-secondary" do %>
+      <i class="bi bi-arrow-left"></i> Retour aux potins
+    <% end %>
+
+  </div>
+</div>

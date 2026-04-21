@@ -1,0 +1,77 @@
+<%# Page de création d'un nouveau potin %>
+<% content_for :title, full_title("Nouveau potin") %>
+
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-6">
+    <div class="card shadow-sm">
+
+      <%# En-tête de la carte %>
+      <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">
+          <i class="bi bi-plus-circle-fill"></i> Publier un nouveau potin
+        </h4>
+      </div>
+
+      <div class="card-body p-4">
+
+        <%# Affichage des erreurs de validation %>
+        <% if @gossip.errors.any? %>
+          <div class="alert alert-danger">
+            <strong>
+              <i class="bi bi-exclamation-triangle"></i>
+              <%= @gossip.errors.count %> erreur(s) :
+            </strong>
+            <ul class="mb-0 mt-1">
+              <%# Liste de toutes les erreurs Active Record %>
+              <% @gossip.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%# Formulaire de création - model: @gossip → POST /gossips %>
+        <%= form_with model: @gossip do |f| %>
+
+          <%# Champ : titre du potin %>
+          <div class="mb-3">
+            <%= f.label :title, "Titre du potin", class: "form-label fw-semibold" %>
+            <%= f.text_field :title,
+                  class:       "form-control",
+                  placeholder: "Un titre accrocheur...",
+                  autofocus:   true %>
+          </div>
+
+          <%# Champ : sélection de la ville (menu déroulant) %>
+          <div class="mb-3">
+            <%= f.label :city_id, "Ville", class: "form-label fw-semibold" %>
+            <%# collection_select : génère un <select> avec les villes %>
+            <%# Arguments : attribut, collection, value_method, text_method %>
+            <%= f.collection_select :city_id, @cities, :id, :name,
+                  { prompt: "-- Choisissez une ville --" },
+                  { class: "form-select" } %>
+          </div>
+
+          <%# Champ : contenu du potin (textarea) %>
+          <div class="mb-4">
+            <%= f.label :content, "Le potin (minimum 10 caractères)", class: "form-label fw-semibold" %>
+            <%= f.text_area :content,
+                  class:       "form-control",
+                  rows:        6,
+                  placeholder: "Racontez votre potin en détail..." %>
+          </div>
+
+          <%# Boutons d'action : publier et annuler %>
+          <div class="d-flex gap-2">
+            <%# Bouton de soumission %>
+            <%= f.submit "📢 Publier le potin", class: "btn btn-dark" %>
+            <%# Lien d'annulation qui retourne à l'accueil %>
+            <%= link_to "Annuler", root_path, class: "btn btn-outline-secondary" %>
+          </div>
+
+        <% end %>
+
+      </div>
+    </div>
+  </div>
+</div>

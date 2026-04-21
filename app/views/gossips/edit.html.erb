@@ -1,0 +1,72 @@
+<%# Page d'édition d'un potin existant (accès restreint à l'auteur) %>
+<% content_for :title, full_title("Modifier le potin") %>
+
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-6">
+    <div class="card shadow-sm">
+
+      <%# En-tête de la carte %>
+      <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">
+          <i class="bi bi-pencil-square"></i> Modifier le potin
+        </h4>
+      </div>
+
+      <div class="card-body p-4">
+
+        <%# Affichage des erreurs de validation %>
+        <% if @gossip.errors.any? %>
+          <div class="alert alert-danger">
+            <strong>
+              <i class="bi bi-exclamation-triangle"></i>
+              <%= @gossip.errors.count %> erreur(s) :
+            </strong>
+            <ul class="mb-0 mt-1">
+              <%# Liste de toutes les erreurs de validation Active Record %>
+              <% @gossip.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%# Formulaire d'édition %>
+        <%# Rails détecte que @gossip est persisté → génère PATCH /gossips/:id %>
+        <%# Les champs sont pré-remplis avec les valeurs actuelles du potin %>
+        <%= form_with model: @gossip do |f| %>
+
+          <%# Champ : titre du potin (pré-rempli avec la valeur actuelle) %>
+          <div class="mb-3">
+            <%= f.label :title, "Titre du potin", class: "form-label fw-semibold" %>
+            <%= f.text_field :title, class: "form-control" %>
+          </div>
+
+          <%# Champ : sélection de la ville (la ville actuelle est présélectionnée) %>
+          <div class="mb-3">
+            <%= f.label :city_id, "Ville", class: "form-label fw-semibold" %>
+            <%# Le city_id actuel est automatiquement sélectionné par Rails %>
+            <%= f.collection_select :city_id, @cities, :id, :name,
+                  {},
+                  { class: "form-select" } %>
+          </div>
+
+          <%# Champ : contenu du potin (pré-rempli) %>
+          <div class="mb-4">
+            <%= f.label :content, "Contenu du potin", class: "form-label fw-semibold" %>
+            <%= f.text_area :content, class: "form-control", rows: 6 %>
+          </div>
+
+          <%# Boutons d'action : sauvegarder et annuler %>
+          <div class="d-flex gap-2">
+            <%# Bouton de mise à jour %>
+            <%= f.submit "💾 Sauvegarder les modifications", class: "btn btn-dark" %>
+            <%# Lien d'annulation qui retourne à la page du potin %>
+            <%= link_to "Annuler", @gossip, class: "btn btn-outline-secondary" %>
+          </div>
+
+        <% end %>
+
+      </div>
+    </div>
+  </div>
+</div>

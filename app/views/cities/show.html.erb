@@ -1,0 +1,38 @@
+<%# Page d'une ville : affiche tous les potins associés à cette ville %>
+<% content_for :title, full_title("Potins de #{@city.name}") %>
+
+<%# En-tête de la page avec le nom de la ville %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">
+    <i class="bi bi-geo-alt-fill text-danger"></i>
+    Potins de <%= @city.name %>
+  </h2>
+  <%# Lien de retour vers tous les potins %>
+  <%= link_to root_path, class: "btn btn-outline-secondary btn-sm" do %>
+    <i class="bi bi-arrow-left"></i> Tous les potins
+  <% end %>
+</div>
+
+<%# Affichage conditionnel selon la présence de potins pour cette ville %>
+<% if @gossips.any? %>
+  <%# Nombre total de potins pour cette ville %>
+  <p class="text-muted mb-3">
+    <strong><%= @gossips.count %></strong> potin(s) trouvé(s) à <%= @city.name %>
+  </p>
+
+  <%# Rendu de chaque potin via le partial partagé _gossip.html.erb %>
+  <%# On spécifie le chemin complet 'gossips/gossip' car on est hors du dossier gossips %>
+  <% @gossips.each do |gossip| %>
+    <%= render 'gossips/gossip', gossip: gossip %>
+  <% end %>
+<% else %>
+  <%# Message si aucun potin n'a été posté pour cette ville %>
+  <div class="alert alert-info text-center">
+    <i class="bi bi-chat-dots fs-3 d-block mb-2"></i>
+    Aucun potin pour <%= @city.name %> pour l'instant.
+    <% if logged_in? %>
+      <%# Invitation à créer le premier potin pour cette ville %>
+      <%= link_to "Soyez le premier à commèrer ici !", new_gossip_path, class: "fw-bold" %>
+    <% end %>
+  </div>
+<% end %>

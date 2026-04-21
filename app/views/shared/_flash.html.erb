@@ -1,0 +1,25 @@
+<%# Partial partagé : affichage des messages flash (notifications) %>
+<%# Itère sur tous les messages flash présents et les affiche avec la bonne couleur Bootstrap %>
+
+<% flash.each do |type, message| %>
+  <%
+    # Correspondance entre les clés flash Rails et les classes Bootstrap Alert
+    # success → vert, danger → rouge, warning → jaune, info/notice → bleu clair
+    css_class = case type.to_s
+                when 'success' then 'alert-success'
+                when 'danger'  then 'alert-danger'
+                when 'warning' then 'alert-warning'
+                when 'info'    then 'alert-info'
+                when 'notice'  then 'alert-info'
+                when 'alert'   then 'alert-warning'
+                else                'alert-secondary'
+                end
+  %>
+  <%# Bloc d'alerte Bootstrap avec bouton de fermeture (X) %>
+  <div class="alert <%= css_class %> alert-dismissible fade show" role="alert">
+    <%# Contenu du message flash %>
+    <%= message %>
+    <%# Bouton de fermeture géré par Bootstrap JS %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+  </div>
+<% end %>

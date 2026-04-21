@@ -1,0 +1,55 @@
+<%# Définition du titre de l'onglet pour cette page %>
+<% content_for :title, full_title("Connexion") %>
+
+<%# Centrage de la carte de connexion sur la page %>
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow-sm">
+
+      <%# En-tête de la carte %>
+      <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">
+          <i class="bi bi-box-arrow-in-right"></i> Connexion
+        </h4>
+      </div>
+
+      <div class="card-body p-4">
+
+        <%# Formulaire de connexion %>
+        <%# url: login_path → POST /login %>
+        <%# scope: :session → les params seront params[:session][:email] et params[:session][:password] %>
+        <%= form_with url: login_path, scope: :session do |f| %>
+
+          <%# Champ : adresse e-mail (identifiant de connexion) %>
+          <div class="mb-3">
+            <%= f.label :email, "Adresse e-mail", class: "form-label fw-semibold" %>
+            <%= f.email_field :email,
+                  class:       "form-control",
+                  placeholder: "votre@email.com",
+                  autofocus:   true %>
+          </div>
+
+          <%# Champ : mot de passe (envoyé en clair via HTTPS, hashé et comparé côté serveur) %>
+          <div class="mb-4">
+            <%= f.label :password, "Mot de passe", class: "form-label fw-semibold" %>
+            <%= f.password_field :password, class: "form-control" %>
+          </div>
+
+          <%# Bouton de connexion %>
+          <%= f.submit "Se connecter",
+                class: "btn btn-dark w-100 py-2" %>
+
+        <% end %>
+
+        <%# Lien vers la page d'inscription pour les nouveaux utilisateurs %>
+        <div class="text-center mt-3">
+          <small class="text-muted">
+            Pas encore de compte ?
+            <%= link_to "S'inscrire", signup_path %>
+          </small>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
