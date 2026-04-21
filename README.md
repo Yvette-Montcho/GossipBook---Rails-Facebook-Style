@@ -1,7 +1,7 @@
 # 📢 GossipBook - Rails Facebook-Style
 
 > Application web de type réseau social de potins, développée en Ruby on Rails.
-> Projet pédagogique — Semaine 6 / Jour 4
+> Projet pédagogique - Semaine 6 / Jour 4
 
 ---
 
@@ -84,7 +84,7 @@ bundler -v   # Bundler 2.x
 
 ## 🚀 Installation et exécution <a name="installation-et-exécution"></a>
 
-### Étape 1 — Cloner et initialiser l'application Rails
+### Étape 1 - Cloner et initialiser l'application Rails
 
 ```bash
 # Cloner le dépôt
@@ -99,13 +99,13 @@ rails new . --skip-bundle --skip-git
 > Répondez **n** (non) pour conserver les fichiers personnalisés du dépôt
 > (routes.rb, application_controller.rb, application.html.erb, etc.)
 
-### Étape 2 — Installer les dépendances
+### Étape 2 - Installer les dépendances
 
 ```bash
 bundle install
 ```
 
-### Étape 3 — Créer et initialiser la base de données
+### Étape 3 - Créer et initialiser la base de données
 
 ```bash
 # Créer la base de données SQLite3
@@ -118,7 +118,7 @@ rails db:migrate
 rails db:seed
 ```
 
-### Étape 4 — Lancer le serveur
+### Étape 4 - Lancer le serveur
 
 ```bash
 rails server
@@ -126,7 +126,7 @@ rails server
 rails s
 ```
 
-### Étape 5 — Ouvrir dans le navigateur
+### Étape 5 - Ouvrir dans le navigateur
 
 Rendez-vous sur → **[http://localhost:3000](http://localhost:3000)**
 
@@ -152,7 +152,7 @@ bundle list
 
 ## 💻 Exécution avec VS Code <a name="exécution-avec-vs-code"></a>
 
-### Méthode 1 — Terminal intégré VS Code (recommandée)
+### Méthode 1 - Terminal intégré VS Code (recommandée)
 
 1. Ouvrir VS Code
 2. **Fichier → Ouvrir le dossier** → sélectionner `gossipbook/`
@@ -168,7 +168,7 @@ rails server
 5. Cliquer sur le lien `http://localhost:3000` dans la sortie du terminal
    (VS Code le rend cliquable automatiquement)
 
-### Méthode 2 — Tâches VS Code (`.vscode/tasks.json`)
+### Méthode 2 - Tâches VS Code (`.vscode/tasks.json`)
 
 Créer le fichier `.vscode/tasks.json` dans le projet :
 
@@ -195,7 +195,7 @@ Créer le fichier `.vscode/tasks.json` dans le projet :
 
 Lancer via : **Terminal → Exécuter la tâche** → `Rails Server`
 
-### Méthode 3 — Débogage Rails dans VS Code
+### Méthode 3 - Débogage Rails dans VS Code
 
 Installer la gem `debug` (déjà dans le Gemfile) et créer `.vscode/launch.json` :
 
